@@ -1,0 +1,43 @@
+.DS_Store
+/.build
+/Packages
+xcuserdata/
+.resolved
+*.resolved
+
+Pods
+Podfile.lock
+
+# Build specific
+build
+
+# fastlane specific
+**/fastlane/report.xml
+
+# deliver temporary files
+**/fastlane/Preview.html
+
+# snapshot generated screenshots
+**/fastlane/screenshots
+
+# scan temporary files
+**/fastlane/test_output
+
+node_modules
+
+**/fastlane/derived
+**/fastlane/xcov
+
+*.generated.swift
+**/*.xcodeproj/MockingbirdCache/ 
+.mockingbird/ 
+/MockingbirdSupport
+lib_InternalSwiftSyntaxParser.dylib
+
+.scannerwork
+HONIRUITests/DiaryRowUITests/ű.swift
+screenshots
+fastlane/README.md
+Gemfile.lock
+.derived_data
+DerivedData
