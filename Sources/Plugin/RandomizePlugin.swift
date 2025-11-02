@@ -5,11 +5,11 @@ import Foundation
 
 @attached(member, names: named(random))
 @attached(extension, conformances: Randomizable)
-public macro Randomize() = #externalMacro(module: "Macros", type: "RandomizeMacro")
+public macro Randomize() = #externalMacro(module: "RandomizeMacros", type: "RandomizeMacro")
 
 @attached(peer)
-public macro Randomizable(in: Any? = nil, stringStrategy: StringRandomizationStrategy? = nil) = #externalMacro(module: "Macros", type: "RandomizedAttributeMacro")
+public macro Randomizable(in: Any? = nil, stringStrategy: StringRandomizationStrategy? = nil) = #externalMacro(module: "RandomizeMacros", type: "RandomizedAttributeMacro")
 
 @attached(peer)
-public macro Unrandomizable() = #externalMacro(module: "Macros", type: "UnrandomizedAttributeMacro")
+public macro Unrandomizable() = #externalMacro(module: "RandomizeMacros", type: "UnrandomizedAttributeMacro")
 

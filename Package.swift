@@ -4,7 +4,7 @@ import PackageDescription
 import CompilerPluginSupport
 
 let package = Package(
-    name: "Core",
+    name: "Randomize",
     platforms: [
         .macOS("10.15"),
         .iOS("13.0"),
@@ -13,7 +13,7 @@ let package = Package(
     ],
     products: [
         .library(name: "Randomizer", targets: ["RandomizerCore"]),
-        .library(name: "RandomizeMacro", targets: ["RandomizeMacro"]),
+        .library(name: "Randomize", targets: ["RandomizeMacro"]),
     ],
     dependencies: [
         .package(url: "https://github.com/swiftlang/swift-syntax", from: "510.0.0")
@@ -21,10 +21,10 @@ let package = Package(
     targets: [
         .target(
             name: "RandomizerCore",
-            path: "Sources/Randomizer"
+            path: "Sources/Randomizable"
         ),
         .macro(
-            name: "Macros",
+            name: "RandomizeMacros",
             dependencies: [
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
@@ -37,7 +37,7 @@ let package = Package(
             name: "RandomizeMacro",
             dependencies: [
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
-                "Macros",
+                "RandomizeMacros",
                 "RandomizerCore"
             ],
             path: "Sources/Plugin"
