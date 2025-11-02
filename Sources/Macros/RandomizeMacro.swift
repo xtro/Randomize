@@ -168,7 +168,11 @@ public struct RandomizeMacro: MemberMacro, ExtensionMacro {
                             return valueExpr
                         }
                     }.joined(separator: ", ")
-                    caseLines.append("case \(idx): return .\(info.name)(\(args))")
+                    if idx == cases.count-1 {
+                        caseLines.append("default: return .\(info.name)(\(args))")
+                    } else {
+                        caseLines.append("case \(idx): return .\(info.name)(\(args))")
+                    }
                 }
             }
             let count = cases.count
