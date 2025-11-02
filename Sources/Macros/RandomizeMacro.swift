@@ -151,7 +151,11 @@ public struct RandomizeMacro: MemberMacro, ExtensionMacro {
             var caseLines: [String] = []
             for (idx, info) in cases.enumerated() {
                 if info.params.isEmpty {
-                    caseLines.append("case \(idx): return .\(info.name)")
+                    if idx == cases.count-1 {
+                        caseLines.append("default: return .\(info.name)")
+                    } else {
+                        caseLines.append("case \(idx): return .\(info.name)")
+                    }
                 } else {
                     let args = info.params.enumerated().map { (i, param) -> String in
                         let (type, label) = param
@@ -168,7 +172,11 @@ public struct RandomizeMacro: MemberMacro, ExtensionMacro {
                             return valueExpr
                         }
                     }.joined(separator: ", ")
-                    caseLines.append("case \(idx): return .\(info.name)(\(args))")
+                    if idx == cases.count-1 {
+                        caseLines.append("default: return .\(info.name)(\(args))")
+                    } else {
+                        caseLines.append("case \(idx): return .\(info.name)(\(args))")
+                    }
                 }
             }
             let count = cases.count
