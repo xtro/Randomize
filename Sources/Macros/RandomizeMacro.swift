@@ -26,6 +26,7 @@ public struct UnrandomizedAttributeMacro: PeerMacro {
 
 public struct RandomizeMacro: MemberMacro, ExtensionMacro {
     public static func expansion(of node: AttributeSyntax, providingMembersOf decl: some DeclGroupSyntax, in context: some MacroExpansionContext) throws -> [DeclSyntax] {
+        let access = decl.modifierString()
         if let structDecl = decl.as(StructDeclSyntax.self) {
             // Collect stored properties and any @Randomized attribute argument for each.
             var paramLines: [String] = []
@@ -58,7 +59,7 @@ public struct RandomizeMacro: MemberMacro, ExtensionMacro {
                         for le in argList {
                             if let label = le.label?.text, label == "in" {
                                 rangeExpr = le.expression.trimmedDescription
-                            } else if let label = le.label?.text, label == "stringStrategy" {
+                            } else if let label = le.label?.text, label == "strategy" {
                                 stringStrategyExpr = le.expression.trimmedDescription
                             }
                         }
@@ -73,7 +74,7 @@ public struct RandomizeMacro: MemberMacro, ExtensionMacro {
                     if let rangeExpr {
                         call = "\(typeAnno).random(in: \(rangeExpr))"
                     } else if let stringStrategyExpr {
-                        call = "StringRandomizationStrategy\(stringStrategyExpr).description"
+                        call = "\(stringStrategyExpr).random()"
                     } else {
                         call = "\(typeAnno).random()"
                     }
@@ -84,7 +85,7 @@ public struct RandomizeMacro: MemberMacro, ExtensionMacro {
             let argsJoined = callLines.joined(separator: ",\n                ")
             
             let randomFunc: DeclSyntax = """
-            static func random() -> \(structDecl.name) {
+            \(raw: access) static func random() -> \(structDecl.name) {
                 \(structDecl.name)(
                     \(raw: argsJoined)
                 )
@@ -150,7 +151,11 @@ public struct RandomizeMacro: MemberMacro, ExtensionMacro {
             var caseLines: [String] = []
             for (idx, info) in cases.enumerated() {
                 if info.params.isEmpty {
-                    caseLines.append("case \(idx): return .\(info.name)")
+                    if idx == cases.count-1 {
+                        caseLines.append("default: return .\(info.name)")
+                    } else {
+                        caseLines.append("case \(idx): return .\(info.name)")
+                    }
                 } else {
                     let args = info.params.enumerated().map { (i, param) -> String in
                         let (type, label) = param
@@ -167,17 +172,20 @@ public struct RandomizeMacro: MemberMacro, ExtensionMacro {
                             return valueExpr
                         }
                     }.joined(separator: ", ")
-                    caseLines.append("case \(idx): return .\(info.name)(\(args))")
+                    if idx == cases.count-1 {
+                        caseLines.append("default: return .\(info.name)(\(args))")
+                    } else {
+                        caseLines.append("case \(idx): return .\(info.name)(\(args))")
+                    }
                 }
             }
             let count = cases.count
             let switchBody = caseLines.joined(separator: "\n                ")
             let randomFunc: DeclSyntax = """
-            static func random() -> \(enumDecl.name) {
+            \(raw: access) static func random() -> \(enumDecl.name) {
                 let i = Int.random(in: 0..<\(raw: count))
                 switch i {
                 \(raw: switchBody)
-                default: return .\(raw: cases.last?.name ?? "\(enumDecl.name)()")
                 }
             }
             """
@@ -199,6 +207,13 @@ public struct RandomizeMacro: MemberMacro, ExtensionMacro {
         let extDecl: DeclSyntax = "extension \(raw: type.trimmedDescription): Randomizable {}"
         guard let extensionSyntax = extDecl.as(ExtensionDeclSyntax.self) else { return [] }
         return [extensionSyntax]
+    }
+}
+extension DeclGroupSyntax {
+    func modifierString() -> String {
+        return modifiers.trimmedDescription
+            .replacingOccurrences(of: "final", with: "")
+            .replacingOccurrences(of: "indirect", with: "")
     }
 }
 

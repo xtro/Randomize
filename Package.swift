@@ -16,7 +16,7 @@ let package = Package(
         .library(name: "Randomize", targets: ["RandomizeMacro"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/swiftlang/swift-syntax", from: "510.0.0")
+        .package(url: "https://github.com/swiftlang/swift-syntax", "510.0.0"..<"603.0.0")
     ],
     targets: [
         .target(

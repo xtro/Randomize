@@ -5,11 +5,58 @@ import UIKit
 import SwiftUI
 #endif
 
+extension Optional: Randomizable where Wrapped: Randomizable {
+    public static func random() -> Self {
+        .some(Wrapped.random())
+    }
+}
+extension Array: Randomizable where Element: Randomizable {
+    public static func random() -> Self {
+        .init(repeating: Element.random(), count: Int.random(in: 0..<10))
+    }
+    public static func random(count: Int) -> Self {
+        (0...count).map { _ in
+            Element.random()
+        }
+    }
+}
+
+#if canImport(UIKit)
+@available(iOS 15.0, *)
+extension ButtonRole: Randomizable {
+    public static func random() -> Self {
+        .destructive
+    }
+}
+#endif
+
 extension Date: RandomizableInRange {
     public static func random(in range: Range<Self>) -> Self {
         let delta = range.upperBound.timeIntervalSince1970 - range.lowerBound.timeIntervalSince1970
         let randomOffset = TimeInterval.random(in: 0..<delta)
         return Date(timeIntervalSince1970: range.lowerBound.timeIntervalSince1970 + randomOffset)
+    }
+}
+extension Date: Randomizable {
+    public static func random() -> Self {
+        Date.random(in: Date().addingTimeInterval(-1_000_000)..<Date().addingTimeInterval(1_000_000))
+    }
+}
+extension Decimal: Randomizable {
+    public static func random() -> Self {
+        // Generate a random Decimal in a reasonable range with random sign
+        let magnitude = Double.random(in: 0...1_000_000)
+        let sign: Double = Bool.random() ? 1 : -1
+        return Decimal(magnitude * sign)
+    }
+}
+extension Decimal: RandomizableInRange {
+    public static func random(in range: Range<Self>) -> Self {
+        // Convert Decimal bounds to Double, generate a random Double in range, then convert back to Decimal
+        let lower = (range.lowerBound as NSDecimalNumber).doubleValue
+        let upper = (range.upperBound as NSDecimalNumber).doubleValue
+        let value = Double.random(in: lower..<upper)
+        return Decimal(value)
     }
 }
 

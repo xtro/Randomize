@@ -20,3 +20,12 @@ private extension Int {
         }
     }
 }
+public struct RandomizationStrategy<Value> {
+    public init(_ value: @escaping () -> Value) {
+        self.value = value
+    }
+    public var value: () -> Value
+    public func random() -> Value {
+        value()
+    }
+}
