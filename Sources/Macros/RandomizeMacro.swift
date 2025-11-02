@@ -178,7 +178,6 @@ public struct RandomizeMacro: MemberMacro, ExtensionMacro {
                 let i = Int.random(in: 0..<\(raw: count))
                 switch i {
                 \(raw: switchBody)
-                default: return .\(raw: cases.last?.name ?? "\(enumDecl.name)()")
                 }
             }
             """

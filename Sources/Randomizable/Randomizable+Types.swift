@@ -5,6 +5,26 @@ import UIKit
 import SwiftUI
 #endif
 
+extension Optional: Randomizable where Wrapped: Randomizable {
+    public static func random() -> Self {
+        .some(Wrapped.random())
+    }
+}
+extension Array: Randomizable where Element: Randomizable {
+    public static func random() -> Self {
+        .init(repeating: Element.random(), count: Int.random(in: 0..<10))
+    }
+}
+
+#if canImport(UIKit)
+@available(iOS 15.0, *)
+extension ButtonRole: Randomizable {
+    public static func random() -> Self {
+        .destructive
+    }
+}
+#endif
+
 extension Date: RandomizableInRange {
     public static func random(in range: Range<Self>) -> Self {
         let delta = range.upperBound.timeIntervalSince1970 - range.lowerBound.timeIntervalSince1970
