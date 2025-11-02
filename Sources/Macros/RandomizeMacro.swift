@@ -204,7 +204,9 @@ public struct RandomizeMacro: MemberMacro, ExtensionMacro {
 }
 extension DeclGroupSyntax {
     func modifierString() -> String {
-        return modifiers.trimmedDescription.replacingOccurrences(of: "final", with: "")
+        return modifiers.trimmedDescription
+            .replacingOccurrences(of: "final", with: "")
+            .replacingOccurrences(of: "indirect", with: "")
     }
 }
 
