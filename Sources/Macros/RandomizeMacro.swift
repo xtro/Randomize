@@ -3,6 +3,7 @@ import SwiftSyntaxBuilder
 import SwiftCompilerPlugin
 import SwiftSyntaxMacros
 import SwiftDiagnostics
+import Foundation
 
 private struct CaseInfo { let name: String; let params: [(type: String, label: String?)]; let caseRanges: [String?] }
 
@@ -85,11 +86,13 @@ public struct RandomizeMacro: MemberMacro, ExtensionMacro {
             let argsJoined = callLines.joined(separator: ",\n                ")
             
             let randomFunc: DeclSyntax = """
+            #if RANDOMIZING
             \(raw: access) static func random() -> \(structDecl.name) {
                 \(structDecl.name)(
                     \(raw: argsJoined)
                 )
             }
+            #endif
             """
             
             return [randomFunc]
@@ -204,7 +207,11 @@ public struct RandomizeMacro: MemberMacro, ExtensionMacro {
     ) throws -> [ExtensionDeclSyntax] {
         // Extend structs and enums to conform to Randomizable
         guard decl.as(StructDeclSyntax.self) != nil || decl.as(EnumDeclSyntax.self) != nil else { return [] }
-        let extDecl: DeclSyntax = "extension \(raw: type.trimmedDescription): Randomizable {}"
+        let extDecl: DeclSyntax = """
+            #if RANDOMIZING
+            extension \(raw: type.trimmedDescription): Randomizable {}
+            #endif
+        """
         guard let extensionSyntax = extDecl.as(ExtensionDeclSyntax.self) else { return [] }
         return [extensionSyntax]
     }

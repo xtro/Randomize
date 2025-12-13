@@ -53,3 +53,44 @@ struct ArticleRow: View {
 #Preview("Randomized Article") {
     ArticleRow(article: .random())
 }
+```
+
+
+## Random generation build flag
+
+⚠️ **Important change in the latest version**: the Randomize macro **only generates random data when the `RANDOMIZING` build flag is explicitly enabled**.
+
+This is intentional. The goal is to ensure that random data generation **can never accidentally leak into production builds** and is always a conscious developer choice.
+
+### Xcode target
+
+Add the flag to the appropriate target:
+
+1. Target ➝ **Build Settings**
+2. **Other Swift Flags**
+3. Add:
+
+```
+-D RANDOMIZING
+```
+
+It is strongly recommended to enable this **only for Debug configurations**.
+
+### Swift Package Manager (SPM) module
+
+For SPM targets, define the flag using `swiftSettings`:
+
+```swift
+.target(
+    name: "YourModule",
+    dependencies: ["Randomize"],
+    swiftSettings: [
+        .define("RANDOMIZING")
+    ]
+)
+```
+
+If the flag is not present, the `@Randomize` macro **does not generate random initializers**, keeping behavior deterministic and production-safe.
+
+This approach ensures that Randomize does its magic where it belongs (previews, tests, demo data), and stays completely silent where it does not.
+
