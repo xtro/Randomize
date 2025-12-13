@@ -185,12 +185,14 @@ public struct RandomizeMacro: MemberMacro, ExtensionMacro {
             let count = cases.count
             let switchBody = caseLines.joined(separator: "\n                ")
             let randomFunc: DeclSyntax = """
+            #if RANDOMIZING
             \(raw: access) static func random() -> \(enumDecl.name) {
                 let i = Int.random(in: 0..<\(raw: count))
                 switch i {
                 \(raw: switchBody)
                 }
             }
+            #endif
             """
             return [randomFunc]
         }
