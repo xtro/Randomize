@@ -210,9 +210,7 @@ public struct RandomizeMacro: MemberMacro, ExtensionMacro {
         // Extend structs and enums to conform to Randomizable
         guard decl.as(StructDeclSyntax.self) != nil || decl.as(EnumDeclSyntax.self) != nil else { return [] }
         let extDecl: DeclSyntax = """
-            #if RANDOMIZING
             extension \(raw: type.trimmedDescription): Randomizable {}
-            #endif
         """
         guard let extensionSyntax = extDecl.as(ExtensionDeclSyntax.self) else { return [] }
         return [extensionSyntax]

@@ -4,6 +4,11 @@ public protocol Randomizable {
     static func random() -> Self
 }
 
+public extension Randomizable {
+    static func random() -> Self {
+        fatalError("Randomizable.random() not implemented for \(Self.self)")
+    }}
+
 public protocol RandomizableInRange: Comparable {
     static func random(in range: Range<Self>) -> Self
 }
